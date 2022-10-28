@@ -40,7 +40,7 @@
             <thead>
               <tr>
                 <th>Phone Number</th>
-                <th>FullName</th>
+                <th>Full Name</th>
                 <th>Ranking</th>
                 <th>Role</th>
                 <th>Store</th>

@@ -201,13 +201,13 @@
             style="font-size: 14px; color: red; text-align: left"
             :style="lowerCase ? 'color: green' : ''"
           >
-            <i class="bi bi-dot" style="font-size: 18px"></i> Lowercase [a-z]
+            <i class="bi bi-dot" style="font-size: 18px"></i> Lower case [a-z]
           </p>
           <p
             style="font-size: 14px; color: red; text-align: left"
             :style="upperCase ? 'color: green' : ''"
           >
-            <i class="bi bi-dot" style="font-size: 18px"></i> Uppercase [A-Z]
+            <i class="bi bi-dot" style="font-size: 18px"></i> Upper case [A-Z]
           </p>
           <p
             style="font-size: 14px; color: red; text-align: left"
@@ -228,7 +228,6 @@
           <button
             class="modal-submit"
             :disabled="
-              modalError != '' ||
               !lowerCase ||
               !upperCase ||
               !numberCase ||
@@ -647,6 +646,7 @@ export default {
           }
         } catch (error) {
           console.log(error.response);
+          this.modalError = error.response.data.message;
         }
       }
     },

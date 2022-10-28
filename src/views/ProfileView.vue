@@ -1,7 +1,7 @@
 <template>
   <div class="userInfo_header">
     <i class="bi bi-person-fill"></i>
-    <h1>Your Account</h1>
+    <h1>My Account</h1>
   </div>
   <div class="userInfo_container">
     <div class="userInfo_items">
@@ -109,7 +109,7 @@
           <form @submit.prevent="updateUser">
             <div class="userInfo_profile_inputs">
               <div class="userInfo_profile_input">
-                <label>FullName</label>
+                <label>Full Name</label>
                 <input
                   type="text"
                   v-model="userProfile.fullname"
@@ -297,13 +297,13 @@
             style="font-size: 14px; color: red; text-align: left"
             :style="lowerCase ? 'color: green' : ''"
           >
-            <i class="bi bi-dot" style="font-size: 18px"></i> Lowercase [a-z]
+            <i class="bi bi-dot" style="font-size: 18px"></i> Lower case [a-z]
           </p>
           <p
             style="font-size: 14px; color: red; text-align: left"
             :style="upperCase ? 'color: green' : ''"
           >
-            <i class="bi bi-dot" style="font-size: 18px"></i> Uppercase [A-Z]
+            <i class="bi bi-dot" style="font-size: 18px"></i> Upper case [A-Z]
           </p>
           <p
             style="font-size: 14px; color: red; text-align: left"

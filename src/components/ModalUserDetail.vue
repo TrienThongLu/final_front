@@ -38,10 +38,10 @@
             </div>
             <div class="Modal_inputs">
               <div class="Modal_input">
-                <label>FullName</label>
+                <label>Full Name</label>
                 <input
                   type="text"
-                  placeholder="Fullname"
+                  placeholder="Full name"
                   maxlength="30"
                   v-model="User.fullname"
                 />
