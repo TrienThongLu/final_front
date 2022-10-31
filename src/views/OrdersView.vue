@@ -307,9 +307,9 @@ export default {
   watch: {
     store() {
       this.GetOrders();
-      // this.interVal = setInterval(() => {
-      //   this.GetOrders();
-      // }, 5000);
+      this.interVal = setInterval(() => {
+        this.GetOrders();
+      }, 5000);
     },
   },
   mounted() {
