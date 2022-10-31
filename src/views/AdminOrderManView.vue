@@ -42,6 +42,7 @@
             type="date"
             id="date"
             min="2022-09-01"
+            :max="new Date().toISOString().split('T')[0]"
             v-model="filter.date"
             @keypress="(e) => e.preventDefault()"
           />
@@ -59,16 +60,16 @@
             </tr>
             <tr
               v-for="order in orders"
-              :key="order.id"
-              @click="orderDetailAct(order.id)"
+              :key="order.sId"
+              @click="orderDetailAct(order.sId)"
             >
-              <td>{{ order.id }}</td>
+              <td>{{ order.sId }}</td>
               <td>{{ order.store }}</td>
               <td>{{ order.type }}</td>
               <td>{{ toLocaleNumber(order.amount) }}₫</td>
               <td>{{ convertToDate(order.createdDate) }}</td>
               <td>{{ order.status }}</td>
-              <td @click.stop="openModalConfirmAct(), (idDelete = order.id)">
+              <td @click.stop="openModalConfirmAct(), (idDelete = order.sId)">
                 <i class="bi bi-trash"></i>
               </td>
             </tr>
@@ -215,9 +216,6 @@ export default {
   mounted() {
     this.getListOrders();
     this.getStores();
-
-    var date = document.getElementById("date");
-    date.max = new Date().toISOString().split("T")[0];
   },
   setup() {
     const isOpenModalOrderDetail = ref(false);

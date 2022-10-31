@@ -27,7 +27,7 @@
             (auth == 'Admin' || auth == 'Reception Staff' || auth == 'Barista')
           "
         >
-          <p>Orders</p>
+          <p>New Orders</p>
         </router-link>
         <span v-else style="display: none"></span>
         <router-link
@@ -39,6 +39,17 @@
           "
         >
           <p>Orders Processing</p>
+        </router-link>
+        <span v-else style="display: none"></span>
+        <router-link
+          to="/allOrders"
+          class="header_navigation-box"
+          v-if="
+            auth &&
+            (auth == 'Admin' || auth == 'Reception Staff' || auth == 'Barista')
+          "
+        >
+          <p>All Orders</p>
         </router-link>
         <span v-else style="display: none"></span>
       </div>
@@ -144,7 +155,7 @@
             {{ this.isShow ? "🐵" : "🙈" }}
           </i>
           <p class="modalError">
-            {{ modalError }}
+            {{ modalErrorLogIn }}
           </p>
           <button class="modal-submit">Login</button>
           <p
@@ -196,27 +207,27 @@
             @click="toggleRe"
             >{{ this.isShowRe ? "🐵" : "🙈" }}</i
           >
-          <p style="font-size: 14px; text-align: left">Password must have</p>
+          <p style="font-size: 12px; text-align: left">Password must have</p>
           <p
-            style="font-size: 14px; color: red; text-align: left"
+            style="font-size: 12px; color: red; text-align: left"
             :style="lowerCase ? 'color: green' : ''"
           >
             <i class="bi bi-dot" style="font-size: 18px"></i> Lower case [a-z]
           </p>
           <p
-            style="font-size: 14px; color: red; text-align: left"
+            style="font-size: 12px; color: red; text-align: left"
             :style="upperCase ? 'color: green' : ''"
           >
             <i class="bi bi-dot" style="font-size: 18px"></i> Upper case [A-Z]
           </p>
           <p
-            style="font-size: 14px; color: red; text-align: left"
+            style="font-size: 12px; color: red; text-align: left"
             :style="numberCase ? 'color: green' : ''"
           >
             <i class="bi bi-dot" style="font-size: 18px"></i> Number [0-9]
           </p>
           <p
-            style="font-size: 14px; color: red; text-align: left"
+            style="font-size: 12px; color: red; text-align: left"
             :style="countCase ? 'color: green' : ''"
           >
             <i class="bi bi-dot" style="font-size: 18px"></i> At Least 8
@@ -231,7 +242,8 @@
               !lowerCase ||
               !upperCase ||
               !numberCase ||
-              !countCase
+              !countCase ||
+              password != reEnterPassword
             "
           >
             Register
@@ -273,10 +285,45 @@
               >{{ this.isShowRe ? "🐵" : "🙈" }}</i
             >
           </div>
+          <p style="font-size: 12px; text-align: left">Password must have</p>
+          <p
+            style="font-size: 12px; color: red; text-align: left"
+            :style="lowerCase ? 'color: green' : ''"
+          >
+            <i class="bi bi-dot" style="font-size: 18px"></i> Lower case [a-z]
+          </p>
+          <p
+            style="font-size: 12px; color: red; text-align: left"
+            :style="upperCase ? 'color: green' : ''"
+          >
+            <i class="bi bi-dot" style="font-size: 18px"></i> Upper case [A-Z]
+          </p>
+          <p
+            style="font-size: 12px; color: red; text-align: left"
+            :style="numberCase ? 'color: green' : ''"
+          >
+            <i class="bi bi-dot" style="font-size: 18px"></i> Number [0-9]
+          </p>
+          <p
+            style="font-size: 12px; color: red; text-align: left"
+            :style="countCase ? 'color: green' : ''"
+          >
+            <i class="bi bi-dot" style="font-size: 18px"></i> At Least 8
+            characters and 16 characters maximum
+          </p>
           <p class="modalError">
             {{ modalError }}
           </p>
-          <button class="modal-submit" :disabled="modalError != ''">
+          <button
+            class="modal-submit"
+            :disabled="
+              !lowerCase ||
+              !upperCase ||
+              !numberCase ||
+              !countCase ||
+              password != reEnterPassword
+            "
+          >
             Reset
           </button>
         </div>
@@ -373,7 +420,7 @@
           {{ this.isShow ? "🐵" : "🙈" }}
         </i>
         <p class="modalError">
-          {{ modalError }}
+          {{ modalErrorLogIn }}
         </p>
         <button class="modal-submit">Logout</button>
       </div>
@@ -405,7 +452,6 @@ export default {
       username: "",
       otpCode: "",
       otpValue: "",
-      modalError: "",
       formNo: 0,
       isShow: false,
       isShowRe: false,
@@ -414,6 +460,9 @@ export default {
       cartItemCount: JSON.parse(localStorage.getItem("Cart"))
         ? JSON.parse(localStorage.getItem("Cart")).length
         : 0,
+
+      modalError: "",
+      modalErrorLogIn: "",
     };
   },
   watch: {
@@ -424,9 +473,11 @@ export default {
         this.modalError = "";
       }
     },
-    formNo() {
-      this.password = "";
-      this.reEnterPassword = "";
+    formNo(newValue) {
+      if (newValue != 4) {
+        this.password = "";
+        this.reEnterPassword = "";
+      }
     },
     password(newValue) {
       let lowerCase = new RegExp("(?=.*[a-z])");
@@ -451,6 +502,11 @@ export default {
         this.numberCase = true;
       } else {
         this.numberCase = false;
+      }
+      if (newValue !== this.reEnterPassword) {
+        this.modalError = "Passwords must match";
+      } else {
+        this.modalError = "";
       }
     },
   },
@@ -562,7 +618,7 @@ export default {
             this.$router.go();
           }
         } catch (error) {
-          this.modalError = error.response.data.message;
+          this.modalErrorLogIn = error.response.data.message;
         }
       }
     },
@@ -626,10 +682,11 @@ export default {
         );
         if (res.status === 200) {
           console.log(res);
-          this.$router.go();
+          this.login();
         }
       } catch (error) {
         console.log(error.response);
+        this.modalError = error.response.data.message;
       }
     },
     async sendOtp(value) {
@@ -665,6 +722,7 @@ export default {
         }
       } catch (error) {
         console.log(error.response);
+        this.modalErrorLogIn = error.response.data.message;
       }
     },
     logout() {
@@ -977,6 +1035,13 @@ export default {
   display: block;
   text-align: center;
   cursor: pointer;
+}
+
+@media screen and (max-width: 1200px) {
+  .header_navigation-box {
+    margin-left: 12px;
+    text-decoration: none;
+  }
 }
 
 /*Horizontal Ipad(1024 x 768)*/

@@ -101,14 +101,30 @@ export default {
   justify-content: center;
   align-items: center;
   height: 560px;
-  background-color: antiquewhite;
   --sliderWidth: 800px;
   --sliderHeight: 500px;
+  position: relative;
+}
+.home-slider_container::after {
+  content: "";
+  opacity: 0.5;
+  display: block;
+  position: absolute;
+  background-image: url("../assets/Images/Carousel/corgi-background.png");
+  background-color: #ff7f7e;
+  z-index: -1;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
 }
 .slider {
   width: var(--sliderWidth);
   height: var(--sliderHeight);
   border-radius: 16px;
+  border: 2px solid black;
   overflow: hidden;
 }
 

@@ -30,12 +30,13 @@
         class="product_item-card"
         v-for="item in items"
         :key="item.id"
-        @click="
-          isOpenModalAddItemAct();
-          itemDetail = item;
-        "
+        :style="!item.isStock ? 'cursor: auto' : ''"
+        @click="itemAction(item)"
       >
-        <div class="product_item-card-content">
+        <div
+          class="product_item-card-content"
+          :style="!item.isStock ? 'opacity: 0.6;' : ''"
+        >
           <div class="product_item-card-image">
             <img :src="item.image" />
           </div>
@@ -46,6 +47,9 @@
               <i class="bi bi-patch-plus"></i>
             </div>
           </div>
+        </div>
+        <div v-if="!item.isStock" class="outStock">
+          <p>Out Of Stock</p>
         </div>
       </div>
     </div>
@@ -80,6 +84,12 @@ export default {
         .replace(/\D/g, "")
         .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       return result;
+    },
+    itemAction(value) {
+      if (value.isStock) {
+        this.isOpenModalAddItemAct();
+        this.itemDetail = value;
+      }
     },
     async getListTypes() {
       try {
@@ -245,6 +255,16 @@ ul > li {
   margin: 0 60px;
   align-items: center;
 }
+.outStock {
+  position: absolute;
+  top: 8px;
+  right: -8px;
+  rotate: 30deg;
+  background-color: red;
+  color: wheat;
+  padding: 4px 6px;
+  border-radius: 9px;
+}
 .product_item-card {
   height: auto;
   flex: 0 0 calc(100% / 6);
@@ -252,6 +272,7 @@ ul > li {
   padding: 0 12px;
   margin-top: 16px;
   cursor: pointer;
+  position: relative;
 }
 .product_item-card-content {
   padding: 10px;

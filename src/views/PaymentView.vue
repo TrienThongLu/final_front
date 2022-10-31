@@ -145,19 +145,35 @@
         </div>
       </div>
       <div class="payment-container-paymentDetail-payment" v-else>
-        <div>
-          <input
-            type="radio"
-            id="COD"
-            name="COD"
-            value="COD"
-            v-model="order.paymentMethod"
-          />
-          <label for="COD">
-            <img src="../assets/Images/Payment/cash.png" alt="cash" />
-            <p>COD</p>
-            <div class="radio"></div>
-          </label>
+        <div style="justify-content: space-between">
+          <div>
+            <input
+              type="radio"
+              id="COD"
+              name="COD"
+              value="COD"
+              v-model="order.paymentMethod"
+            />
+            <label for="COD">
+              <img src="../assets/Images/Payment/cash.png" alt="cash" />
+              <p>COD</p>
+              <div class="radio"></div>
+            </label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="PayPal"
+              name="PayPal"
+              value="PayPal"
+              v-model="order.paymentMethod"
+            />
+            <label for="PayPal">
+              <img src="../assets/Images/Payment/paypal.png" alt="cash" />
+              <p>PayPal</p>
+              <div class="radio"></div>
+            </label>
+          </div>
         </div>
         <div>
           <input
@@ -190,7 +206,7 @@
       </div>
       <button
         :style="confirmDisabled ? 'opacity: 0.3; cursor: auto' : ''"
-        @click="createOrder"
+        @click.once="createOrder"
         :disabled="confirmDisabled"
       >
         Confirm Order
@@ -660,7 +676,8 @@ export default {
 .payment-container-paymentDetail-payment {
   margin-bottom: 20px;
 }
-.payment-container-paymentDetail-payment > div {
+.payment-container-paymentDetail-payment > div,
+.payment-container-paymentDetail-payment > div > div {
   display: flex;
   align-items: center;
   margin-bottom: 8px;

@@ -217,7 +217,7 @@
                 :key="order.id"
                 @click="
                   isOpenModalOrderDetailAct();
-                  orderDetailId = order.id;
+                  orderDetailId = order.sId;
                 "
               >
                 <td class="col-1">{{ order.store }}</td>
@@ -292,27 +292,27 @@
               >{{ isShowRe ? "🐵" : "🙈" }}</i
             >
           </div>
-          <p style="font-size: 14px; text-align: left">Password must have</p>
+          <p style="font-size: 12px; text-align: left">Password must have</p>
           <p
-            style="font-size: 14px; color: red; text-align: left"
+            style="font-size: 12px; color: red; text-align: left"
             :style="lowerCase ? 'color: green' : ''"
           >
             <i class="bi bi-dot" style="font-size: 18px"></i> Lower case [a-z]
           </p>
           <p
-            style="font-size: 14px; color: red; text-align: left"
+            style="font-size: 12px; color: red; text-align: left"
             :style="upperCase ? 'color: green' : ''"
           >
             <i class="bi bi-dot" style="font-size: 18px"></i> Upper case [A-Z]
           </p>
           <p
-            style="font-size: 14px; color: red; text-align: left"
+            style="font-size: 12px; color: red; text-align: left"
             :style="numberCase ? 'color: green' : ''"
           >
             <i class="bi bi-dot" style="font-size: 18px"></i> Number [0-9]
           </p>
           <p
-            style="font-size: 14px; color: red; text-align: left"
+            style="font-size: 12px; color: red; text-align: left"
             :style="countCase ? 'color: green' : ''"
           >
             <i class="bi bi-dot" style="font-size: 18px"></i> At Least 8
