@@ -25,10 +25,10 @@
           <div
             class="order-body-item_body_item"
             v-for="order in ordersProcessing"
-            :key="order.id"
+            :key="order.sId"
             @click="
               isOpenModalOrderDetailAct();
-              orderDetailId = order.id;
+              orderDetailId = order.sId;
             "
           >
             <div
@@ -51,7 +51,7 @@
               </p>
             </div>
             <div class="order-body-item_body_item_body">
-              <p>Id: {{ order.id }}</p>
+              <p>Id: {{ order.sId }}</p>
               <div class="order-body-item_body_item_body_content">
                 <p>{{ toLocaleNumber(order.amount) }}₫</p>
                 <p>
@@ -318,8 +318,8 @@ select::-webkit-scrollbar-thumb {
   background-color: #555;
 }
 .order-body-item_body_item {
-  width: fit-content;
-  height: fit-content;
+  width: 230px;
+  height: 240px;
   background-color: white;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;

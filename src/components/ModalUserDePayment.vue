@@ -14,10 +14,10 @@
           <form @submit.prevent="modify">
             <div class="Modal_inputs">
               <div class="Modal_input" style="width: 96%">
-                <label>FullName</label>
+                <label>Full Name</label>
                 <input
                   type="text"
-                  placeholder="Fullname"
+                  placeholder="Full name"
                   v-model="userDetail.fullname"
                   maxlength="30"
                 />

@@ -15,7 +15,14 @@
               <p>
                 Order # ({{ orderDetail.type == 1 ? "At Store" : "Online" }})
               </p>
-              <p>{{ orderDetail.id }}</p>
+              <p>
+                {{ orderDetail.sId }}
+                <span
+                  v-if="!auth.includes('Customer')"
+                  @click="print(orderDetail.sId)"
+                  >(Print bill)</span
+                >
+              </p>
             </div>
             <div>
               <p>Placed on</p>
@@ -92,7 +99,7 @@
                   </p>
                 </div>
               </div>
-              <div style="text-align: right">
+              <div class="bottom-right">
                 <p>
                   Payment Method:
                   <b>{{ toLocaleNumber(orderDetail.paymentMethod) }}</b>
@@ -106,6 +113,31 @@
                 <p>
                   Amount: <b>{{ toLocaleNumber(orderDetail.amount) }}₫</b>
                 </p>
+                <div v-if="auth == 'Admin'">
+                  <div v-if="orderDetail.paymentMethod.includes('MoMo')">
+                    <p>
+                      Request Id:
+                      <b>{{ orderDetail.paymentInfo.moMoRequestId }}%</b>
+                    </p>
+                    <p>
+                      Transition Id:
+                      <b>{{ orderDetail.paymentInfo.moMoTransId }}%</b>
+                    </p>
+                  </div>
+                  <div v-else-if="orderDetail.paymentMethod == 'PayPal'">
+                    <p>
+                      Pay Id: <b>{{ orderDetail.paymentInfo.ppPayId }}%</b>
+                    </p>
+                    <p>
+                      Payer: <b>{{ orderDetail.paymentInfo.ppPayer }}%</b>
+                    </p>
+                    <p>
+                      Token: <b>{{ orderDetail.paymentInfo.ppToken }}%</b>
+                    </p>
+                  </div>
+                  <span v-else style="display: none"></span>
+                </div>
+                <span v-else style="display: none"></span>
               </div>
             </div>
             <div
@@ -163,7 +195,7 @@
   <div v-if="orderDetail.takenBy.isCustomer">
     <modal-change-cus
       :ModalChangeCusActive="isOpenModalChangeCus"
-      :OrderId="orderDetail.id"
+      :OrderId="orderDetail.sId"
       :StoreId="orderDetail.storeId"
       :CustomerId="orderDetail.takenBy.id"
       @closeModalChangeCus="isOpenModalChangeCusAct"
@@ -211,7 +243,7 @@ export default {
     initialState() {
       return {
         orderDetail: {
-          id: "",
+          sId: "",
           type: undefined,
           status: undefined,
           totalPrice: undefined,
@@ -259,7 +291,7 @@ export default {
     async nextStage() {
       try {
         const res = await this.$mainAxios.put(
-          `Order/NextStatus/${this.orderDetail.id}`
+          `Order/NextStatus/${this.orderDetail.sId}`
         );
         if (res.status == 200) {
           console.log(res);
@@ -272,7 +304,7 @@ export default {
     async completeOrder() {
       try {
         const res = await this.$mainAxios.put(
-          `Order/CompleteOrder/${this.orderDetail.id}`
+          `Order/CompleteOrder/${this.orderDetail.sId}`
         );
         if (res.status == 200) {
           console.log(res);
@@ -285,7 +317,7 @@ export default {
     async finishOrder() {
       try {
         const res = await this.$mainAxios.put(
-          `Order/OrderDone/${this.orderDetail.id}`
+          `Order/OrderDone/${this.orderDetail.sId}`
         );
         if (res.status == 200) {
           console.log(res);
@@ -294,6 +326,46 @@ export default {
       } catch (error) {
         console.log(error.response);
       }
+    },
+    async print(value) {
+      try {
+        const res = await this.$mainAxios.get(`Order/getFileOrder/${value}`, {
+          responseType: "arraybuffer",
+        });
+        if (res.status == 200) {
+          console.log(res);
+
+          var blob = new Blob([res.data], { type: "application/pdf" });
+          var blobURL = URL.createObjectURL(blob);
+
+          var link = document.createElement("a");
+          link.href = blobURL;
+          link.download = value + ".pdf";
+          link.dispatchEvent(new MouseEvent("click"));
+        }
+      } catch (error) {
+        console.log(error.response);
+      }
+    },
+    convertToByteArray(input) {
+      var sliceSize = 512;
+      var bytes = [];
+
+      for (var offset = 0; offset < input.length; offset += sliceSize) {
+        var slice = input.slice(offset, offset + sliceSize);
+
+        var byteNumbers = new Array(slice.length);
+
+        for (var i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+
+        bytes.push(byteArray);
+      }
+
+      return bytes;
     },
   },
   watch: {
@@ -405,6 +477,14 @@ export default {
   font-weight: bold;
   color: #adb5bd;
 }
+.Modal-body-header span {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.Modal-body-header span:hover {
+  opacity: 0.6;
+}
 
 .Modal-body-content {
   margin-top: 20px;
@@ -494,6 +574,9 @@ thead::after {
 .isCustomer:hover {
   opacity: 0.5;
 }
+.bottom-right {
+  text-align: right;
+}
 
 .modal-buttons {
   display: flex;
@@ -548,8 +631,25 @@ thead::after {
   .Modal-body-content table tbody td:nth-child(5) {
     min-width: 110px;
   }
+  .Modal-body-header {
+    flex-direction: column;
+    height: auto;
+    text-align: left;
+    align-items: flex-start;
+  }
 }
 @media screen and (max-width: 560px) {
+  .Modal-body-content_bottom > div {
+    width: 100% !important;
+  }
+  .Modal-body-content_bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+  .bottom-right {
+    text-align: left;
+  }
 }
 /*Small tablet(480 x 640)*/
 @media screen and (max-width: 480px) {

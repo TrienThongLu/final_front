@@ -16,6 +16,13 @@
               </option>
             </select>
           </div>
+          <div class="table-search-search">
+            <select v-model="filter.stock">
+              <option value="" selected>All Stock</option>
+              <option :value="0">In Stock</option>
+              <option :value="1">Out of Stock</option>
+            </select>
+          </div>
           <div style="position: relative">
             <input
               type="text"
@@ -32,6 +39,7 @@
               <th>Name</th>
               <th>Type</th>
               <th>Price</th>
+              <th>In Stock</th>
               <th></th>
             </tr>
             <tr
@@ -57,6 +65,11 @@
               <td>{{ item.name }}</td>
               <td>{{ getItemType(item.typeId) }}</td>
               <td>{{ toLocaleNumber(item.price) }}₫</td>
+              <!-- <td><input type="checkbox" v-model="item.isStock" /></td> -->
+              <td class="check">
+                <input type="checkbox" v-model="item.isStock" />
+                <div class="checkbox" @click.stop="stock(item.id)"></div>
+              </td>
               <td>
                 <div @click.stop="openModalConfirmAct(), (idDelete = item.id)">
                   <i class="bi bi-trash"></i
@@ -129,6 +142,7 @@ export default {
       filter: {
         searchString: "",
         typeFilter: "",
+        stock: "",
       },
       itemDetail: {},
 
@@ -165,6 +179,19 @@ export default {
         .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       return result;
     },
+    async stock(value) {
+      try {
+        const res = await this.$mainAxios.put(`Item/UpdateItemStock/${value}`);
+        if (res.status == 200) {
+          this.items.find((i) => i.id == value).isStock = !this.items.find(
+            (i) => i.id == value
+          ).isStock;
+          this.getListItems();
+        }
+      } catch (error) {
+        console.log(error.response);
+      }
+    },
     async getTypes() {
       try {
         const res = await this.$mainAxios.get(`ItemType/GetType`);
@@ -191,7 +218,7 @@ export default {
       try {
         const searchData = this.filter.searchString.trim();
         const res = await this.$mainAxios.get(
-          `Item/GetItem?currentPage=${this.pagination.currentPage}&searchString=${searchData}&typeId=${this.filter.typeFilter}`
+          `Item/GetItem?currentPage=${this.pagination.currentPage}&searchString=${searchData}&typeId=${this.filter.typeFilter}&stock=${this.filter.stock}`
         );
         if (res.status == 200) {
           this.items = res.data.data;
@@ -225,6 +252,13 @@ export default {
       }, 300);
     },
     "filter.typeFilter"() {
+      clearTimeout(timeOut);
+      timeOut = setTimeout(() => {
+        this.pagination.currentPage = 1;
+        this.getListItems();
+      }, 300);
+    },
+    "filter.stock"() {
       clearTimeout(timeOut);
       timeOut = setTimeout(() => {
         this.pagination.currentPage = 1;
@@ -375,6 +409,7 @@ table th {
   position: sticky;
   top: 0;
   background: #eabf43;
+  z-index: 10;
 }
 .table-container table th,
 .table-container table td {
@@ -475,6 +510,49 @@ table th {
   bottom: 20px;
 }
 
+.check input[type="checkbox"] {
+  position: absolute;
+  display: none;
+  right: 0;
+  top: 0;
+}
+.check {
+  position: relative;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+}
+.checkbox {
+  position: absolute;
+  top: 50%;
+  right: 36%;
+  transform: translate(-50%, -50%);
+  height: 25px;
+  width: 25px;
+  border-radius: 10px;
+  background-color: #edb724;
+}
+.checkbox:hover {
+  opacity: 0.6;
+}
+.checkbox:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+.check input[type="checkbox"]:checked ~ .checkbox:after {
+  display: block;
+}
+.check .checkbox:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
 @media screen and (max-width: 1140px) {
   .container {
     left: 190px;
@@ -512,6 +590,10 @@ table th {
 @media screen and (max-width: 560px) {
   .table-search {
     width: 94%;
+    justify-content: space-around;
+  }
+  .table-search-search {
+    margin: 8px 0;
   }
 }
 /*Small tablet(480 x 640)*/

@@ -22,17 +22,15 @@
                 <p>{{ toLocaleNumber(newItem.price) }}₫</p>
                 <div class="Modal_item-plus_minus">
                   <button
-                    :disabled="addItem.quantity == 1"
+                    :disabled="addItem.quantity <= 1"
                     @click="addItem.quantity--"
                   >
                     <i class="bi bi-dash-square-fill"></i>
                   </button>
-                  <p style="margin: 0 14px">
-                    {{ quantityMax == 0 ? quantityMax : addItem.quantity }}
-                  </p>
+                  <input v-model="addItem.quantity" maxlength="2" minlength="1" @keypress="isNumber($event)" @keyup="checkQuantity" style="margin: 0 14px;margin: 0px 14px; width: 30px; text-align: center; border-radius: 10px; border-color: black;" />
                   <button
                     :disabled="
-                      addItem.quantity == quantityMax || quantityMax == 0
+                      addItem.quantity >= quantityMax || quantityMax == 0
                     "
                     @click="plusQuantity()"
                   >
@@ -140,7 +138,6 @@ export default {
       const body = document.querySelector("body");
       if (value) {
         body.style.overflow = "hidden";
-        this.quantityMaxFunc();
         this.addItem = {
           size: {
             name: "S",
@@ -159,8 +156,15 @@ export default {
         this.newItem.groupSizes = this.Item.groupSizes;
         this.addItem.itemPrice = this.Item.price;
         this.newItem.toppings = this.Item.toppings;
+        this.quantityMaxFunc();
       } else {
         body.style.overflow = "auto";
+        this.quantityMax = undefined
+      }
+    },
+    quantityMax(newValue) {
+      if (newValue == 0) {
+        this.addItem.quantity = 0
       }
     },
     // Item(newValue) {
@@ -242,9 +246,31 @@ export default {
 
         totalPrice: 0,
 
-        quantityMax: 0,
+        quantityMax: undefined,
         Error: "",
       };
+    },
+    isNumber(evt) {
+      evt = evt ? evt : window.event;
+      var charCode = evt.which ? evt.which : evt.keyCode;
+      if (
+        charCode > 31 &&
+        (charCode < 48 || charCode > 57) &&
+        charCode !== 46
+      ) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
+    },
+    checkQuantity() {
+      if (this.addItem.quantity > this.quantityMax) {
+        this.addItem.quantity = this.quantityMax;
+        return;
+      }
+      if (this.addItem.quantity == '') {
+        this.addItem.quantity = 1;
+      }
     },
     reset() {
       this.addItem = this.initialState().addItem;

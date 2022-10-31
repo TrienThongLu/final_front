@@ -30,8 +30,49 @@
           </div>
         </div>
       </div>
+      <div class="inputs">
+        <div class="inputs-content">
+          <p>From:</p>
+          <input
+            type="date"
+            id="dateFrom"
+            min="2022-09-01"
+            :max="new Date().toISOString().split('T')[0]"
+            v-model="filter.from"
+            @keypress="(e) => e.preventDefault()"
+          />
+        </div>
+        <div class="inputs-content">
+          <p style="text-align: left">To:</p>
+          <input
+            type="date"
+            id="dateTo"
+            min="2022-09-01"
+            :max="new Date().toISOString().split('T')[0]"
+            v-model="filter.to"
+            @keypress="(e) => e.preventDefault()"
+          />
+        </div>
+        <button
+          @click="getStatistic()"
+          :disabled="
+            Date.parse(filter.from) > Date.parse(filter.to) ||
+            !filter.from ||
+            !filter.to
+          "
+          :style="
+            Date.parse(filter.from) > Date.parse(filter.to) ||
+            !filter.from ||
+            !filter.to
+              ? 'opacity: 0.3; cursor: auto;'
+              : ''
+          "
+        >
+          Confirm
+        </button>
+      </div>
       <div class="storesRev">
-        <h1>Revenue of each stores on {{ thisMonth() }}</h1>
+        <h1>Revenue of each stores {{ period() }}</h1>
         <Bar
           class="bar-chart"
           :chart-options="{
@@ -86,7 +127,7 @@
       </div>
       <div class="pies">
         <div class="pie">
-          <h1>Total orders</h1>
+          <h1>Total orders {{ period() }}</h1>
           <Pie
             :chart-options="{
               responsive: true,
@@ -109,7 +150,7 @@
           ></Pie>
         </div>
         <div class="pie">
-          <h1>5 trending items on {{ thisMonth() }}</h1>
+          <h1>5 trending items {{ period() }}</h1>
           <Pie
             :chart-options="{
               responsive: true,
@@ -213,20 +254,10 @@ export default {
         fOrder: undefined,
       },
 
-      month: [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ],
+      filter: {
+        from: "",
+        to: "",
+      },
     };
   },
   methods: {
@@ -239,20 +270,46 @@ export default {
         return result;
       }
     },
-    thisMonth() {
-      const d = new Date();
-      let name = this.month[d.getMonth()];
-      return name;
+    getDate(value) {
+      const date = new Date(parseInt(value));
+      var month;
+      var dateVal;
+      if (date.getMonth() < 9) {
+        month = "0" + (parseInt(date.getMonth()) + 1).toString();
+      } else {
+        month = (parseInt(date.getMonth()) + 1).toString();
+      }
+      if (date.getDate() < 10) {
+        dateVal = "0" + date.getDate();
+      } else {
+        dateVal = date.getDate();
+      }
+      const dateConverted = date.getFullYear() + "/" + month + "/" + dateVal;
+      return dateConverted;
+    },
+    period() {
+      return "from: " + this.filter.from + " - " + this.filter.to;
     },
     async getStatistic() {
       try {
-        const res = await this.$mainAxios.get(`Order/Statistic`);
+        let from = "";
+        let to = "";
+        if (this.filter.from && this.filter.to) {
+          from = Date.parse(this.filter.from);
+          to = Date.parse(this.filter.to);
+        }
+        const res = await this.$mainAxios.get(
+          `Order/Statistic?to=${to}&from=${from}`
+        );
         if (res.status == 200) {
           this.total = res.data.total;
           this.topUser = res.data.topUser;
           this.top5PurItems = res.data.top5PurItems;
           this.revEachStore = res.data.revEachStore;
           this.orderSt = res.data.orderSt;
+
+          this.filter.from = this.getDate(res.data.from);
+          this.filter.to = this.getDate(res.data.to);
 
           console.log(res);
           this.dataReturned = true;
@@ -265,6 +322,12 @@ export default {
   watch: {},
   mounted() {
     this.getStatistic();
+
+    // var dateFrom = document.getElementById("dateFrom");
+    // dateFrom.max = new Date().toISOString().split("T")[0];
+
+    // var dateTo = document.getElementById("dateTo");
+    // dateTo.max = new Date().toISOString().split("T")[0];
   },
   setup() {},
 };
@@ -368,6 +431,34 @@ export default {
   border-radius: 20px;
   padding: 20px;
   overflow: auto;
+}
+
+.inputs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px 0;
+}
+.inputs-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.inputs input {
+  padding: 10px;
+  margin: 0 10px;
+  border-radius: 12px;
+  border: 1px solid black;
+}
+.inputs button {
+  color: white;
+  height: 32px;
+  width: 130px;
+  font-weight: 800;
+  border-radius: 12px;
+  border-color: transparent;
+  background-color: #ffb100;
+  cursor: pointer;
 }
 
 .table-container {
@@ -525,6 +616,12 @@ table tr th {
   }
 }
 @media screen and (max-width: 560px) {
+  .inputs {
+    flex-direction: column;
+  }
+  .inputs-content {
+    margin: 8px 0;
+  }
 }
 /*Small tablet(480 x 640)*/
 @media screen and (max-width: 480px) {

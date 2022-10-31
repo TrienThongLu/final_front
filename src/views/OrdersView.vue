@@ -25,10 +25,10 @@
           <div
             class="order-body-item_body_item"
             v-for="order in ordersProcessing"
-            :key="order.id"
+            :key="order.sId"
             @click="
               isOpenModalOrderDetailAct();
-              orderDetailId = order.id;
+              orderDetailId = order.sId;
             "
           >
             <div
@@ -51,7 +51,7 @@
               </p>
             </div>
             <div class="order-body-item_body_item_body">
-              <p>Id: {{ order.id }}</p>
+              <p>Id: {{ order.sId }}</p>
               <div class="order-body-item_body_item_body_content">
                 <p>{{ toLocaleNumber(order.amount) }}₫</p>
                 <p>
@@ -79,10 +79,10 @@
           <div
             class="order-body-item_body_item"
             v-for="order in ordersDelivery"
-            :key="order.id"
+            :key="order.sId"
             @click="
               isOpenModalOrderDetailAct();
-              orderDetailId = order.id;
+              orderDetailId = order.sId;
             "
           >
             <div
@@ -96,7 +96,7 @@
               <p>{{ order.type }}</p>
             </div>
             <div class="order-body-item_body_item_body">
-              <p>Id: {{ order.id }}</p>
+              <p>Id: {{ order.sId }}</p>
               <div class="order-body-item_body_item_body_content">
                 <p>{{ toLocaleNumber(order.amount) }}₫</p>
                 <p>
@@ -124,10 +124,10 @@
           <div
             class="order-body-item_body_item"
             v-for="order in ordersPendingPay"
-            :key="order.id"
+            :key="order.sId"
             @click="
               isOpenModalOrderDetailAct();
-              orderDetailId = order.id;
+              orderDetailId = order.sId;
             "
           >
             <div
@@ -141,7 +141,7 @@
               <p>{{ order.type }}</p>
             </div>
             <div class="order-body-item_body_item_body">
-              <p>Id: {{ order.id }}</p>
+              <p>Id: {{ order.sId }}</p>
               <div class="order-body-item_body_item_body_content">
                 <p>{{ toLocaleNumber(order.amount) }}₫</p>
                 <p>
@@ -169,10 +169,10 @@
           <div
             class="order-body-item_body_item"
             v-for="order in ordersCompleted"
-            :key="order.id"
+            :key="order.sId"
             @click="
               isOpenModalOrderDetailAct();
-              orderDetailId = order.id;
+              orderDetailId = order.sId;
             "
           >
             <div
@@ -186,7 +186,7 @@
               <p>{{ order.type }}</p>
             </div>
             <div class="order-body-item_body_item_body">
-              <p>Id: {{ order.id }}</p>
+              <p>Id: {{ order.sId }}</p>
               <div class="order-body-item_body_item_body_content">
                 <p>{{ toLocaleNumber(order.amount) }}₫</p>
                 <p>
@@ -307,9 +307,9 @@ export default {
   watch: {
     store() {
       this.GetOrders();
-      this.interVal = setInterval(() => {
-        this.GetOrders();
-      }, 5000);
+      // this.interVal = setInterval(() => {
+      //   this.GetOrders();
+      // }, 5000);
     },
   },
   mounted() {

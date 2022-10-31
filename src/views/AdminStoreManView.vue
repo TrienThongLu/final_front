@@ -11,7 +11,7 @@
           <div style="position: relative">
             <input
               type="text"
-              placeholder="Search item"
+              placeholder="Search store"
               v-model="searchString"
             />
             <i class="bi bi-search"></i>
