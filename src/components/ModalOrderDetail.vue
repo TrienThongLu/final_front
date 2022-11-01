@@ -117,7 +117,15 @@
                   <div v-if="orderDetail.paymentMethod.includes('MoMo')">
                     <p>
                       Request Id:
-                      <b>{{ orderDetail.paymentInfo.moMoRequestId }}%</b>
+                      <b
+                        @click="isOpenModalPaymentDetailAct()"
+                        style="
+                          color: blue;
+                          text-decoration: underline;
+                          cursor: pointer;
+                        "
+                        >{{ orderDetail.paymentInfo.moMoRequestId }}%</b
+                      >
                     </p>
                     <p>
                       Transition Id:
@@ -126,7 +134,16 @@
                   </div>
                   <div v-else-if="orderDetail.paymentMethod == 'PayPal'">
                     <p>
-                      Pay Id: <b>{{ orderDetail.paymentInfo.ppPayId }}%</b>
+                      Pay Id:
+                      <b
+                        @click="isOpenModalPaymentDetailAct()"
+                        style="
+                          color: blue;
+                          text-decoration: underline;
+                          cursor: pointer;
+                        "
+                        >{{ orderDetail.paymentInfo.ppPayId }}%</b
+                      >
                     </p>
                     <p>
                       Payer: <b>{{ orderDetail.paymentInfo.ppPayer }}%</b>
@@ -202,16 +219,33 @@
       @customerSubmit="getOrderDetail(OrderId)"
     ></modal-change-cus>
   </div>
+  <span v-else style="display: none"></span>
+  <div
+    v-if="
+      orderDetail.paymentMethod.includes('MoMo') ||
+      orderDetail.paymentMethod == 'PayPal'
+    "
+  >
+    <modal-payment-detail
+      :ModalPaymentDetailActive="isOpenModalPaymentDetail"
+      :OrderId="orderDetail.sId"
+      @closeModalPaymentDetail="isOpenModalPaymentDetailAct"
+    >
+    </modal-payment-detail>
+  </div>
+  <span v-else style="display: none"></span>
 </template>
 
 <script>
 import { ref } from "vue";
 import ModalChangeCus from "../components/ModalChangeCus.vue";
+import ModalPaymentDetail from "../components/ModalPaymentDetail.vue";
 
 export default {
   name: "Modal-OrderDetail",
   components: {
     ModalChangeCus,
+    ModalPaymentDetail,
   },
   props: ["ModalOrderDetailActive", "OrderId"],
   emits: ["closeModalOrderDetail"],
@@ -225,10 +259,17 @@ export default {
       isOpenModalChangeCus.value = !isOpenModalChangeCus.value;
     };
 
+    const isOpenModalPaymentDetail = ref(false);
+    const isOpenModalPaymentDetailAct = () => {
+      isOpenModalPaymentDetail.value = !isOpenModalPaymentDetail.value;
+    };
+
     return {
       closeModalOrderDetail,
       isOpenModalChangeCus,
       isOpenModalChangeCusAct,
+      isOpenModalPaymentDetail,
+      isOpenModalPaymentDetailAct,
     };
   },
   data() {
