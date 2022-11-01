@@ -164,7 +164,7 @@ router.beforeEach((to, from, next) => {
       }
       break;
     case "thankyou":
-      if (auth != null && to.query.partnerCode && to.query.orderId) {
+      if (to.query.partnerCode && to.query.orderId) {
         next();
       } else {
         next("/");
