@@ -366,7 +366,7 @@
         <p class="modalError">
           {{ modalError }}
         </p>
-        <button class="modal-submit">Logout</button>
+        <button class="modal-submit" style="margin-top: 0">Logout</button>
       </div>
     </form>
   </component>
@@ -465,6 +465,9 @@ export default {
     onPageChange(page) {
       this.pagination.currentPage = page;
       this.getOrders();
+    },
+    toggle() {
+      this.isShow = !this.isShow;
     },
     img(url) {
       if (url !== "") {

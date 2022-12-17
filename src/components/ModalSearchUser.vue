@@ -89,6 +89,7 @@ export default {
         ranking: "",
       };
       this.phonenumber = "";
+      this.Error = "";
       this.$emit("searchUser", this.userDetail);
       this.closeModalSearchUser();
     },

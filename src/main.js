@@ -22,7 +22,7 @@ app.use(router);
 app.use(VueCookies);
 app.use(VueGoogleMaps, {
   load: {
-    key: "AIzaSyCjNQyaPdELQKIOgMbMSEmgFNP48C4NEQE",
+    key: "AIzaSyCKCI4kRCOBjhTKx6KFoicdszTpqbPeYcg",
     language: "vi",
     libraries: "places",
     region: "VN",
