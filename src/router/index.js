@@ -21,173 +21,180 @@ import AdminOrderManView from "../views/AdminOrderManView.vue";
 import AdminStoreManView from "../views/AdminStoreManView.vue";
 
 const routes = [
-  {
-    path: "/:catchAll(.*)", // Unrecognized path automatically matches 404
-    redirect: "/",
-  },
-  {
-    path: "/",
-    name: "home",
-    component: HomeView,
-  },
-  {
-    path: "/profile/:type?",
-    name: "profile",
-    component: ProfileView,
-  },
-  {
-    path: "/product/:category?",
-    name: "product",
-    component: ProductView,
-  },
-  {
-    path: "/stores",
-    name: "stores",
-    component: StoreView,
-  },
-  {
-    path: "/payment",
-    name: "payment",
-    component: PaymentView,
-  },
-  {
-    path: "/orders",
-    name: "orders",
-    component: OrdersView,
-  },
-  {
-    path: "/ordersPrc",
-    name: "ordersPrc",
-    component: OrdersPrcView,
-  },
-  {
-    path: "/allOrders",
-    name: "allOrders",
-    component: AllOrdersView,
-  },
-  {
-    path: "/thankyou",
-    name: "thankyou",
-    component: ThankYouView,
-  },
-  {
-    path: "/payPalTY/:id",
-    name: "payPalTY",
-    component: PayPalTYView,
-  },
-  {
-    path: "/admin",
-    name: "admin",
-    component: AdminHomeView,
-    meta: { layout: "admin" },
-  },
-  {
-    path: "/admin/UserManagement",
-    name: "userManagement",
-    component: AdminUserManView,
-    meta: { layout: "admin" },
-  },
-  {
-    path: "/admin/RoleManagement",
-    name: "roleManagement",
-    component: AdminRoleManView,
-    meta: { layout: "admin" },
-  },
-  {
-    path: "/admin/ItemManagement",
-    name: "itemManagement",
-    component: AdminItemManView,
-    meta: { layout: "admin" },
-  },
-  {
-    path: "/admin/ItemTypeManagement",
-    name: "itemTypeManagement",
-    component: AdminItemTypeManView,
-    meta: { layout: "admin" },
-  },
-  {
-    path: "/admin/ToppingManagement",
-    name: "toppingManagement",
-    component: AdminToppingManView,
-    meta: { layout: "admin" },
-  },
-  {
-    path: "/admin/OrderManagement",
-    name: "orderManagement",
-    component: AdminOrderManView,
-    meta: { layout: "admin" },
-  },
-  {
-    path: "/admin/StoreManagement",
-    name: "storeManagement",
-    component: AdminStoreManView,
-    meta: { layout: "admin" },
-  },
+	{
+		path: "/:catchAll(.*)", // Unrecognized path automatically matches 404
+		redirect: "/",
+	},
+	{
+		path: "/",
+		name: "home",
+		component: HomeView,
+	},
+	{
+		path: "/profile/:type?",
+		name: "profile",
+		component: ProfileView,
+	},
+	{
+		path: "/product/:category?",
+		name: "product",
+		component: ProductView,
+	},
+	{
+		path: "/stores",
+		name: "stores",
+		component: StoreView,
+	},
+	{
+		path: "/payment",
+		name: "payment",
+		component: PaymentView,
+	},
+	{
+		path: "/orders",
+		name: "orders",
+		component: OrdersView,
+	},
+	{
+		path: "/ordersPrc",
+		name: "ordersPrc",
+		component: OrdersPrcView,
+	},
+	{
+		path: "/allOrders",
+		name: "allOrders",
+		component: AllOrdersView,
+	},
+	{
+		path: "/thankyou",
+		name: "thankyou",
+		component: ThankYouView,
+	},
+	{
+		path: "/payPalTY/:id",
+		name: "payPalTY",
+		component: PayPalTYView,
+	},
+	{
+		path: "/admin",
+		name: "admin",
+		component: AdminHomeView,
+		meta: { layout: "admin" },
+	},
+	{
+		path: "/admin/UserManagement",
+		name: "userManagement",
+		component: AdminUserManView,
+		meta: { layout: "admin" },
+	},
+	{
+		path: "/admin/RoleManagement",
+		name: "roleManagement",
+		component: AdminRoleManView,
+		meta: { layout: "admin" },
+	},
+	{
+		path: "/admin/ItemManagement",
+		name: "itemManagement",
+		component: AdminItemManView,
+		meta: { layout: "admin" },
+	},
+	{
+		path: "/admin/ItemTypeManagement",
+		name: "itemTypeManagement",
+		component: AdminItemTypeManView,
+		meta: { layout: "admin" },
+	},
+	{
+		path: "/admin/ToppingManagement",
+		name: "toppingManagement",
+		component: AdminToppingManView,
+		meta: { layout: "admin" },
+	},
+	{
+		path: "/admin/OrderManagement",
+		name: "orderManagement",
+		component: AdminOrderManView,
+		meta: { layout: "admin" },
+	},
+	{
+		path: "/admin/StoreManagement",
+		name: "storeManagement",
+		component: AdminStoreManView,
+		meta: { layout: "admin" },
+	},
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(),
-  routes,
+	history: createWebHashHistory(),
+	routes,
 });
 
 router.beforeEach((to, from, next) => {
-  var auth = cookie.get("Auth");
-  switch (to.name) {
-    case "admin":
-    case "userManagement":
-    case "roleManagement":
-    case "itemManagement":
-    case "itemTypeManagement":
-    case "toppingManagement":
-    case "orderManagement":
-    case "storeManagement":
-      if (auth == "Admin") {
-        next();
-      } else {
-        next("/");
-      }
-      break;
-    case "orders":
-    case "ordersPrc":
-    case "allOrders":
-      if (auth != null && !auth.includes("Customer")) {
-        next();
-      } else {
-        next("/");
-      }
-      break;
-    case "profile":
-      if (auth) {
-        next();
-      } else {
-        next("/");
-      }
-      break;
-    case "thankyou":
-      if (to.query.partnerCode && to.query.orderId) {
-        next();
-      } else {
-        next("/");
-      }
-      break;
-    case "payPalTY":
-      if (to.params.id && to.query.token) {
-        next();
-      } else {
-        next("/");
-      }
-      break;
-    case "payment":
-      if (auth != null && localStorage.getItem("Cart") != null) {
-        next();
-      } else {
-        next("/");
-      }
-      break;
-    default:
-      next();
-      break;
-  }
+	var auth = cookie.get("Auth");
+	switch (to.name) {
+		case "admin":
+		case "userManagement":
+		case "roleManagement":
+		case "itemManagement":
+		case "itemTypeManagement":
+		case "toppingManagement":
+		case "orderManagement":
+		case "storeManagement":
+			if (auth || auth == "Admin") {
+				next();
+			} else {
+				next("/");
+			}
+			break;
+		case "orders":
+		case "allOrders":
+			if (auth && !auth.includes("Customer") && auth != "Barista") {
+				next();
+			} else {
+				next("/");
+			}
+			break;
+		case "ordersPrc": {
+			if (auth && (auth == "Barista" || auth == "Admin")) {
+				next();
+			} else {
+				next("/");
+			}
+			break;
+		}
+		case "profile":
+			if (auth) {
+				next();
+			} else {
+				next("/");
+			}
+			break;
+		case "thankyou":
+			if (to.query.partnerCode && to.query.orderId) {
+				next();
+			} else {
+				next("/");
+			}
+			break;
+		case "payPalTY":
+			if (to.params.id && to.query.token) {
+				next();
+			} else {
+				next("/");
+			}
+			break;
+		case "payment":
+			if (auth && localStorage.getItem("Cart")) {
+				next();
+			} else {
+				next("/");
+			}
+			break;
+		default:
+			next();
+			break;
+	}
 });
 
 export default router;

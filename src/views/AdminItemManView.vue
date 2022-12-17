@@ -211,7 +211,7 @@ export default {
           console.log(res);
         }
       } catch (error) {
-        console.log(error.response);
+        console.log(error);
       }
     },
     async getListItems() {
@@ -233,7 +233,7 @@ export default {
       try {
         const res = await this.$mainAxios.delete(`Item/DeleteItem/${value}`);
         if (res.status == 200) {
-          this.$router.go();
+          window.location.reload();
         }
       } catch (error) {
         console.log(error.response);
@@ -409,7 +409,7 @@ table th {
   position: sticky;
   top: 0;
   background: #eabf43;
-  z-index: 10;
+  z-index: 2;
 }
 .table-container table th,
 .table-container table td {

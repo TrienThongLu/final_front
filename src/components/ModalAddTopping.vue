@@ -37,7 +37,9 @@
             </div>
             <p class="modalError">{{ Error }}</p>
             <div class="Modal_inputs">
-              <button :disabled="newTopping === ''">Add</button>
+              <button :disabled="!newTopping.name || !newTopping.price">
+                Add
+              </button>
             </div>
           </form>
         </div>
@@ -97,7 +99,7 @@ export default {
           price: this.newTopping.price,
         });
         if (res.status == 200) {
-          this.$router.go();
+          window.location.reload();
         }
       } catch (error) {
         console.log(error.response);

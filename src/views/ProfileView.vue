@@ -482,7 +482,7 @@ export default {
         this.$cookies.remove("Token");
         this.$cookies.remove("Auth");
         this.$cookies.remove("StoreId");
-        this.$router.go();
+        window.location.reload();
       } else {
         this.isOpenModalLogOutAct();
       }
@@ -524,7 +524,7 @@ export default {
           this.$cookies.remove("Token");
           this.$cookies.remove("Auth");
           this.$cookies.remove("StoreId");
-          this.$router.go();
+          window.location.reload();
         }
       } catch (error) {
         console.log(error.response);
@@ -576,7 +576,7 @@ export default {
           editUser
         );
         if (res.status == 200) {
-          this.$router.go();
+          window.location.reload();
         }
       } catch (error) {
         const _validateErrors = Object.values(error.response.data.errors);
@@ -600,7 +600,7 @@ export default {
           data: address,
         });
         if (res.status == 200) {
-          this.$router.go();
+          window.location.reload();
         }
       } catch (error) {
         console.log(error.response);
@@ -615,7 +615,7 @@ export default {
         const res = await this.$mainAxios.put(`User/ChangePassword/`, userData);
         if (res.status === 200) {
           console.log(res);
-          this.$router.go();
+          window.location.reload();
         }
       } catch (error) {
         console.log(error.response);
@@ -655,7 +655,7 @@ export default {
       } else {
         this.lowerCase = false;
       }
-      if (newValue.length > 8) {
+      if (newValue.length >= 8) {
         this.countCase = true;
       } else {
         this.countCase = false;

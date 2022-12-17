@@ -27,13 +27,29 @@
                   >
                     <i class="bi bi-dash-square-fill"></i>
                   </button>
-                  <p style="margin: 0 14px">
+                  <!-- <p style="margin: 0 14px">
                     {{ quantityMax == 0 ? quantityMax : modifyItem.quantity }}
+                  </p> -->
+                  <p style="margin: 0 14px">
+                    {{ modifyItem.quantity }}
                   </p>
-                  <button
-                    :disabled="
-                      modifyItem.quantity == quantityMax || quantityMax == 0
+                  <!-- <input
+                    v-model="modifyItem.quantity"
+                    maxlength="2"
+                    minlength="1"
+                    @keypress="isNumber($event)"
+                    @keyup="checkQuantity"
+                    style="
+                      margin: 0 14px;
+                      margin: 0px 14px;
+                      width: 30px;
+                      text-align: center;
+                      border-radius: 10px;
+                      border-color: black;
                     "
+                  /> -->
+                  <button
+                    :disabled="modifyItem.quantity == quantityMax"
                     @click="modifyItem.quantity++"
                   >
                     <i class="bi bi-plus-square-fill"></i>
@@ -100,7 +116,7 @@
                   </button>
                   <p style="margin: 0 14px">{{ topping.quantity }}</p>
                   <button
-                    :disabled="topping.quantity == 2 || quantityMax == 0"
+                    :disabled="topping.quantity == 2"
                     @click="
                       topping.quantity++;
                       plusTotalPrice(topping.price);
@@ -115,7 +131,7 @@
           <span v-else style="display: none"></span>
         </div>
         <div class="Modal-footer">
-          <button @click="updateItem" :disabled="quantityMax == 0">
+          <button @click="updateItem">
             {{ toLocaleNumber(totalPrice) }}₫ - Update Item
           </button>
         </div>
@@ -140,7 +156,6 @@ export default {
       const body = document.querySelector("body");
       if (value) {
         body.style.overflow = "hidden";
-        this.quantityMaxFunc();
       } else {
         body.style.overflow = "auto";
       }
@@ -161,6 +176,7 @@ export default {
       this.modifyItem.itemTotalPrice = newValue.item.itemTotalPrice;
 
       this.getItem(newValue.item.id);
+      this.quantityMaxFunc();
     },
     modifyItem: {
       handler(newValue) {
@@ -205,7 +221,7 @@ export default {
           totalQuantity += item.quantity;
         }
       }
-      this.quantityMax = 20 - totalQuantity;
+      this.quantityMax = 20 - totalQuantity + this.modifyItem.quantity;
     },
     toLocaleNumber(value) {
       const result = value
@@ -213,6 +229,28 @@ export default {
         .replace(/\D/g, "")
         .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       return result;
+    },
+    isNumber(evt) {
+      evt = evt ? evt : window.event;
+      var charCode = evt.which ? evt.which : evt.keyCode;
+      if (
+        charCode > 31 &&
+        (charCode < 48 || charCode > 57) &&
+        charCode !== 46
+      ) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
+    },
+    checkQuantity() {
+      if (this.modifyItem.quantity > this.quantityMax) {
+        this.modifyItem.quantity = this.quantityMax;
+        return;
+      }
+      if (this.modifyItem.quantity == "") {
+        this.modifyItem.quantity = 1;
+      }
     },
     plusTotalPrice(value) {
       this.modifyItem.itemPrice += value;
@@ -276,6 +314,7 @@ export default {
         localStorage.setItem("Cart", JSON.stringify(cart));
         this.$mitt.emit("itemAdded", true);
       }
+      this.closeModalModifyItem();
     },
   },
   mounted() {},

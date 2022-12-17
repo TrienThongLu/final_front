@@ -9,7 +9,10 @@
             style="font-size: 22px"
           ></i>
         </div>
-        <div class="Modal-body">
+        <div
+          class="Modal-body"
+          :style="ErrorText ? 'margin-bottom: 100px;' : ''"
+        >
           <h1>Add New Item</h1>
           <div class="Modal-item-content">
             <label class="Modal_item-image" for="img-input">
@@ -119,6 +122,12 @@
           </div>
         </div>
         <div class="Modal-footer">
+          <p
+            v-if="ErrorText"
+            style="font-size: 12px; color: red; text-align: left"
+          >
+            {{ ErrorText }}
+          </p>
           <button @click="addItem">Add Item</button>
         </div>
       </div>
@@ -188,7 +197,7 @@ export default {
           Price: 10000,
         },
       ],
-      Error: "",
+      ErrorText: "",
     };
   },
   methods: {
@@ -244,12 +253,24 @@ export default {
           },
         });
         if (res.status == 200) {
-          this.$router.go();
+          window.location.reload();
         }
       } catch (error) {
         console.log(error.response);
-        if (error.response.data.Message) {
-          this.Error = error.response.data.Message;
+        if (error.response.data.errors) {
+          this.ErrorText = "";
+          const _validateErrors = Object.values(error.response.data.errors);
+          _validateErrors.map((value) => {
+            if (this.ErrorText) {
+              this.ErrorText += " " + value[0];
+            } else {
+              this.ErrorText += value[0];
+            }
+          });
+        }
+
+        if (error.response.status == 413) {
+          this.ErrorText = "Image is too large";
         }
       }
     },

@@ -22,10 +22,7 @@
         <router-link
           to="/orders"
           class="header_navigation-box"
-          v-if="
-            auth &&
-            (auth == 'Admin' || auth == 'Reception Staff' || auth == 'Barista')
-          "
+          v-if="auth && (auth == 'Admin' || auth == 'Reception Staff')"
         >
           <p>New Orders</p>
         </router-link>
@@ -33,10 +30,7 @@
         <router-link
           to="/ordersPrc"
           class="header_navigation-box"
-          v-if="
-            auth &&
-            (auth == 'Admin' || auth == 'Reception Staff' || auth == 'Barista')
-          "
+          v-if="auth && (auth == 'Admin' || auth == 'Barista')"
         >
           <p>Orders Processing</p>
         </router-link>
@@ -44,10 +38,7 @@
         <router-link
           to="/allOrders"
           class="header_navigation-box"
-          v-if="
-            auth &&
-            (auth == 'Admin' || auth == 'Reception Staff' || auth == 'Barista')
-          "
+          v-if="auth && (auth == 'Admin' || auth == 'Reception Staff')"
         >
           <p>All Orders</p>
         </router-link>
@@ -207,6 +198,13 @@
             @click="toggleRe"
             >{{ this.isShowRe ? "🐵" : "🙈" }}</i
           >
+          <p
+            style="font-size: 12px; color: red; text-align: left"
+            :style="usernameCase ? 'color: green' : ''"
+          >
+            <i class="bi bi-dot" style="font-size: 18px"></i> Name must have at
+            least 5 characters
+          </p>
           <p style="font-size: 12px; text-align: left">Password must have</p>
           <p
             style="font-size: 12px; color: red; text-align: left"
@@ -239,6 +237,7 @@
           <button
             class="modal-submit"
             :disabled="
+              !usernameCase ||
               !lowerCase ||
               !upperCase ||
               !numberCase ||
@@ -248,6 +247,9 @@
           >
             Register
           </button>
+          <p class="forgotPassword" style="color: black" @click="changeNumber">
+            Change phone number
+          </p>
         </div>
       </form>
       <form v-else-if="formNo === 3" @submit.prevent="resetPassword">
@@ -449,6 +451,7 @@ export default {
       upperCase: false,
       numberCase: false,
       countCase: false,
+      usernameCase: false,
       username: "",
       otpCode: "",
       otpValue: "",
@@ -479,6 +482,13 @@ export default {
         this.reEnterPassword = "";
       }
     },
+    username(newValue) {
+      if (newValue.length >= 5) {
+        this.usernameCase = true;
+      } else {
+        this.usernameCase = false;
+      }
+    },
     password(newValue) {
       let lowerCase = new RegExp("(?=.*[a-z])");
       let upperCase = new RegExp("(?=.*[A-Z])");
@@ -488,7 +498,7 @@ export default {
       } else {
         this.lowerCase = false;
       }
-      if (newValue.length > 8) {
+      if (newValue.length >= 8) {
         this.countCase = true;
       } else {
         this.countCase = false;
@@ -532,6 +542,15 @@ export default {
         return true;
       }
     },
+    changeNumber() {
+      this.phonenumber = "";
+      this.password = "";
+      this.reEnterPassword = "";
+      this.username = "";
+      this.formNo = 0;
+      this.isShow = false;
+      this.isShowRe = false;
+    },
     toggle() {
       this.isShow = !this.isShow;
     },
@@ -572,11 +591,11 @@ export default {
             phoneNumber: this.phonenumber,
             password: this.password,
           };
-          const res = await this.$mainAxios.post(`User/Login`, user);
-          if (res.status === 200) {
+          const resLogin = await this.$mainAxios.post(`User/Login`, user);
+          if (resLogin.status === 200) {
             this.$cookies.set(
               "UserId",
-              res.data.content.user.id,
+              resLogin.data.content.user.id,
               null,
               null,
               null,
@@ -585,7 +604,7 @@ export default {
             );
             this.$cookies.set(
               "Token",
-              res.data.content.token.token,
+              resLogin.data.content.token.token,
               null,
               null,
               null,
@@ -594,17 +613,17 @@ export default {
             );
             this.$cookies.set(
               "Auth",
-              res.data.content.roleName,
+              resLogin.data.content.roleName,
               null,
               null,
               null,
               true,
               null
             );
-            if (res.data.content.user.storeId) {
+            if (resLogin.data.content.user.storeId) {
               this.$cookies.set(
                 "StoreId",
-                res.data.content.user.storeId,
+                resLogin.data.content.user.storeId,
                 null,
                 null,
                 null,
@@ -614,8 +633,10 @@ export default {
             }
             this.$mainAxios.defaults.headers[
               "Authorization"
-            ] = `Bearer ${res.data.content.token.token}`;
-            this.$router.go();
+            ] = `Bearer ${resLogin.data.content.token.token}`;
+            if (this.$cookies.get("UserId")) {
+              window.location.reload();
+            }
           }
         } catch (error) {
           this.modalErrorLogIn = error.response.data.message;
@@ -718,7 +739,7 @@ export default {
           this.$cookies.remove("Token");
           this.$cookies.remove("Auth");
           this.$cookies.remove("StoreId");
-          this.$router.go();
+          window.location.reload();
         }
       } catch (error) {
         console.log(error.response);
@@ -731,7 +752,7 @@ export default {
         this.$cookies.remove("Token");
         this.$cookies.remove("Auth");
         this.$cookies.remove("StoreId");
-        this.$router.go();
+        window.location.reload();
       } else {
         this.isOpenModalLogOutAct();
       }

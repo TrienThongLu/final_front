@@ -20,13 +20,9 @@
               <td>{{ topping.name }}</td>
               <td>{{ toLocaleNumber(topping.price) }}₫</td>
               <td>
-                <div>
+                <div @click="openModalConfirmAct(), (idDelete = topping.id)">
                   <i class="bi bi-trash"></i
-                  ><span
-                    style="margin-left: 10px"
-                    @click="openModalConfirmAct(), (idDelete = topping.id)"
-                    >Delete</span
-                  >
+                  ><span style="margin-left: 10px">Delete</span>
                 </div>
               </td>
             </tr>
@@ -103,7 +99,7 @@ export default {
           `Topping/DeleteTopping/${value}`
         );
         if (res.status == 200) {
-          this.$router.go();
+          window.location.reload();
         }
       } catch (error) {
         console.log(error.response);
